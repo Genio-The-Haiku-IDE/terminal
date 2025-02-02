@@ -10,6 +10,8 @@
 # The name of the binary.
 NAME = Terminal
 
+TARGET_DIR = .
+
 # The type of binary, must be one of:
 #	APP:	Application
 #	SHARED:	Shared library or add-on
@@ -18,7 +20,7 @@ NAME = Terminal
 TYPE = APP
 
 # If you plan to use localization, specify the application's MIME signature.
-APP_MIME_SIG = "application/x-vnd.Haiku-Terminal"
+APP_MIME_SIG = "application/x-vnd.Haiku-Terminal2"
 
 #	The following lines tell Pe and Eddie where the SRCS, RDEFS, and RSRCS are
 #	so that Pe and Eddie can fill them in for you.
@@ -69,6 +71,7 @@ SRCS = \
 	 TitlePlaceholderMapper.cpp  \
 	 VTKeyTbl.c  \
 	 VTPrsTbl.c  \
+	 GenioTermView.cpp
 
 
 #	Specify the resource definition files to use. Full or relative paths can be

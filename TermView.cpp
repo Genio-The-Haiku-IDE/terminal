@@ -87,7 +87,11 @@ static property_info sPropList[] = {
 	{B_GET_PROPERTY, 0},
 	{B_DIRECT_SPECIFIER, 0},
 	"get tty name."},
-	{ 0  }
+	{ "command",
+	{B_EXECUTE_PROPERTY, 0},
+	{B_DIRECT_SPECIFIER, 0},
+	"execute command"},
+	{ 0  },
 };
 
 
@@ -1751,7 +1755,39 @@ TermView::MessageReceived(BMessage *message)
 			if (message->GetCurrentSpecifier(&i, &specifier) == B_OK
 				&& strcmp("command",
 					specifier.FindString("property", i)) == 0) {
-				
+
+				Shell* shell = fShell;
+				_DetachShell();
+				delete shell;
+
+				fShell = new (std::nothrow) Shell();
+				if (fShell == NULL)
+					break;
+
+				type_code type;
+				int32 countFound = 0;
+				const char **argv = nullptr;
+
+
+				if (message->GetInfo("argv", &type, &countFound) == B_OK) {
+					argv = new const char*[countFound];
+					int i=0;
+					while(message->FindString("argv", i, &argv[i]) == B_OK){
+						i++;
+					}
+				}
+
+				ShellParameters shellParameters(countFound, argv);
+				shellParameters.SetEncoding(fEncoding);
+
+				if (argv != nullptr)
+					delete[] argv;
+
+				status_t error = fShell->Open(fRows, fColumns, shellParameters);
+				if (error < B_OK)
+					break;
+
+				_AttachShell(fShell);
 				message->SendReply(B_REPLY);
 			} else {
 				BView::MessageReceived(message);
