@@ -1777,11 +1777,16 @@ TermView::MessageReceived(BMessage *message)
 					}
 				}
 
+				if (message->GetBool("clear", false) == true) {
+					Clear();
+				}
+
 				ShellParameters shellParameters(countFound, argv);
 				shellParameters.SetEncoding(fEncoding);
 
-				if (argv != nullptr)
+				if (argv != nullptr) {
 					delete[] argv;
+				}
 
 				status_t error = fShell->Open(fRows, fColumns, shellParameters);
 				if (error < B_OK)

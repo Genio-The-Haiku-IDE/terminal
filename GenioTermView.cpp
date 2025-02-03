@@ -43,40 +43,30 @@ private:
 	BView*	fTermView;
 };
 
-
-
 class GenioListener : public TermView::Listener {
 public:
-								GenioListener(BMessenger& msg): fMessenger(msg)
-									{};
+  GenioListener(BMessenger &msg) : fMessenger(msg) {};
 
-	virtual						~GenioListener(){};
+  virtual ~GenioListener() {};
 
-	// all hooks called in the window thread
-	virtual	void				NotifyTermViewQuit(TermView* view,
-									int32 reason) {
-										printf("NotifyTermViewQuit OK [%s]\n", fMessenger.Target(nullptr)->Name());
-									BMessage msg('NOTM');
-									printf("SEND %s\n", strerror(fMessenger.SendMessage(&msg)));
-									}
-	virtual	void				SetTermViewTitle(TermView* view,
-									const char* title)
-									{
-									printf("|| SetTermViewTitle %s\n", title);
-									}
-	virtual	void				PreviousTermView(TermView* view)
-	{
-		printf("|| PreviousTermView\n");
-	}
-	virtual	void				NextTermView(TermView* view)
-	{
-		printf("|| NextTermView\n");
-	}
+  // all hooks called in the window thread
+  virtual void NotifyTermViewQuit(TermView *view, int32 reason) {
+    BMessage msg('NOTM');
+	msg.AddInt32("reason", reason);
+	msg.AddPointer("term_view", view);
+	fMessenger.SendMessage(&msg);
+	printf("Reason %s\n", strerror(reason));
+  }
+  virtual void SetTermViewTitle(TermView *view, const char *title) {
+    printf("|| SetTermViewTitle %s\n", title);
+  }
+  virtual void PreviousTermView(TermView *view) {
+    printf("|| PreviousTermView\n");
+  }
+  virtual void NextTermView(TermView *view) { printf("|| NextTermView\n"); }
 
-	BMessenger fMessenger;
+  BMessenger fMessenger;
 };
-
-
 
 /*static*/
 BArchivable*
